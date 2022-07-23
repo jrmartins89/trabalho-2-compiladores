@@ -3,53 +3,74 @@ from sly import Lexer
 
 class LexerAnalyser(Lexer):
     # Conjunto de tokens. Sempre é necessário.
-    tokens = {DEF_IDENT,
-              INT_IDENT,
-              FLOAT_IDENT,
-              STRING_IDENT,
-              INT_CONSTANT,
-              FLOAT_CONSTANT,
-              STRING_CONSTANT,
-              NULL,
-              LPAREN,
-              RPAREN,
-              PLUS,
-              MINUS,
-              TIMES,
-              DIVIDE,
-              MOD,
-              BREAK,
-              PRINT,
-              READ,
-              LSQBRACKET,
-              RSQBRACKET,
-              LCBRACKET,
-              RCBRACKET,
-              RETURN,
-              IF,
-              ELSE,
-              NEW,
-              SEMICOLON,
-              LESSTHAN,
-              GREATERTHAN,
-              LESSOREQUAL,
-              GREATEROREQUAL,
-              EQUALTO,
-              DIFFERENTTHAN}
+    tokens = {DEF, IDENT, NUMBER, PLUS, MINUS, TIMES,
+     DIVIDE, ASSIGN, LPAREN, RPAREN, LBRACE,
+     RBRACE, LBRACKET, RBRACKET, INT, FLOAT, STRING,
+     SEMICOL, BREAK, COL, READ, PRINT, RETURN, IF, ELSE, FOR, NEW,
+     GT, LT, GE, LE, EQ, NOTEQ, REMAINDER, INT_CONSTANT, FLOAT_CONSTANT, STRING_CONSTANT, NULL}
+
+    # reserved words
+    DEF = r'\bdef\b'
+    INT = r'\bint\b'
+    FLOAT = r'\bfloat\b'
+    STRING = r'\bstring\b'
+    BREAK = r'\bbreak\b'
+    READ = r'\bread\b'
+    PRINT = r'\bprint\b'
+    RETURN = r'\breturn\b'
+    IF = r'\bif\b'
+    ELSE = r'\belse\b'
+    FOR = r'\bfor\b'
+    NEW = r'\bnew\b'
+    NULL = r'\bnull\b'
+
+    # symbols
+    LPAREN = r'\('
+    RPAREN = r'\)'
+    LBRACE = r'\{'
+    RBRACE = r'\}'
+    LBRACKET = r'\['
+    RBRACKET = r'\]'
+    GE = r'>='
+    LE = r'<='
+    EQ = r'\=='
+    NOTEQ = r'!='
+    DIVIDE = r'/'
+    GT = r'>'
+    LT = r'<'
+    ASSIGN = r'='
+    REMAINDER = r'%'
+    PLUS = r'\+'
+    MINUS = r'-'
+    TIMES = r'\*'
+    SEMICOL = r';'
+    COL = r','
+
+    # Identifiers
+    IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
+
+    # Numbers
+    INT_CONSTANT = r'[0-9]+'
+    FLOAT_CONSTANT = r'[+-]?[0-9]+\.[0-9]+'
+
+    # Strings
+    STRING_CONSTANT = r'[a-zA-Z\u00C0-\u00FF]+'
 
     # String que contém os caracteres ignorados entre os tokens
     ignore = ' \t'
 
-    # Expressoes regulares para os tokens
-    DEF = r'[a-zA-Z_][a-zA-Z0-9_]*'
-    NUMBER = r'\d+'
-    PLUS = r'\+'
-    MINUS = r'-'
-    TIMES = r'\*'
-    DIVIDE = r'/'
-    ASSIGN = r'='
-    LPAREN = r'\('
-    RPAREN = r'\)'
+    @_(r'\d+')
+    def NUMBER(self, t):
+        t.value = int(t.value)
+        return t
+
+    @_(r'#.*')
+    def COMMENT(self, t):
+        pass
+
+    @_(r'\n+')
+    def newLine(self, t):
+        self.lineno = t.value.count('\n')
 
 
 if __name__ == '__main__':
