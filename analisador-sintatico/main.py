@@ -188,6 +188,102 @@ class CalcParser(Parser):
     def expression(self, p):
         return p.p, p.numexpression
 
+    @_('<')
+    def g(self):
+        return '<'
+
+    @_('>')
+    def g(self):
+        return '>'
+
+    @_('<=')
+    def g(self):
+        return '<='
+
+    @_('>=')
+    def g(self):
+        return '>='
+
+    @_('==')
+    def g(self):
+        return '=='
+
+    @_('!=')
+    def g(self):
+        return '!='
+
+    @_('TERM L')
+    def numexpression(self, p):
+        return p.term, p.l
+
+    @_('L1')
+    def l(self, p):
+        return p.l1
+
+    @_('TERM UNARYEXPR M')
+    def o(self, p):
+        return p.term, p.unaryexpr, p.m
+
+    @_('N UNARYEXPR')
+    def m(self, p):
+        return p.n, p.unaryexpr
+
+    @_('*')
+    def n(self):
+        return '*'
+
+    @_('/')
+    def n(self):
+        return '/'
+
+    @_('%')
+    def n(self):
+        return '%'
+
+    @_('R FACTOR')
+    def unaryexpr(self, p):
+        return p.r, p.factor
+
+    @_('+')
+    def r(self):
+        return '+'
+
+    @_('-')
+    def r(self):
+        return '-'
+
+    @_('int_constant')
+    def factor(self, p):
+        return p.INT_CONSTANT
+
+    @_('float_constant')
+    def factor(self, p):
+        return p.FLOAT_CONSTANT
+
+    @_('string_constant')
+    def factor(self, p):
+        return p.STRING_CONSTANT
+
+    @_('null')
+    def factor(self):
+        return 'null'
+
+    @_('LVALUE')
+    def factor(self, p):
+        return p.lvalue
+
+    @_('"(" NUMEXPRESSION ")"')
+    def factor(self, p):
+        return p.numexpression
+
+    @_('ident K1')
+    def lvalue(self, p):
+        return p.IDENT, p.k1
+
+    @_('O TERM L1')
+    def l1(self, p):
+        return p.o, p.term, p.l1
+
     @_('VARDECL";"')
     def statement(self, p):
         return p.paramlist
