@@ -125,7 +125,7 @@ class CalcParser(Parser):
         return p.PRINT, p.expression
 
     @_('read LVALUE')
-    def printstat(self, p):
+    def readstat(self, p):
         return p.PRINT, p.expression
 
     @_('return')
@@ -172,59 +172,35 @@ class CalcParser(Parser):
     def t(self, p):
         return p.STRING
 
-    @_(' "[" NUMEXPRESSION "]" k1')
+    @_(' "[" numexpression "]" k1')
     def k(self, p):
         return p.numexpression, p.k1
 
-    @_('K')
+    @_('k')
     def k1(self, p):
         return p.k
 
-    @_('NUMEXPRESSION G')
+    @_('numexpression g')
     def expression(self, p):
         return p.numexpression, p.g
 
-    @_('P NUMEXPRESSION')
-    def expression(self, p):
+    @_('p numexpression')
+    def g(self, p):
         return p.p, p.numexpression
 
-    @_('<')
-    def g(self):
-        return '<'
-
-    @_('>')
-    def g(self):
-        return '>'
-
-    @_('<=')
-    def g(self):
-        return '<='
-
-    @_('>=')
-    def g(self):
-        return '>='
-
-    @_('==')
-    def g(self):
-        return '=='
-
-    @_('!=')
-    def g(self):
-        return '!='
-
-    @_('TERM L')
+    @_('term l')
     def numexpression(self, p):
         return p.term, p.l
 
-    @_('L1')
+    @_('l1')
     def l(self, p):
         return p.l1
 
-    @_('TERM UNARYEXPR M')
+    @_('term unaryexpr m')
     def o(self, p):
         return p.term, p.unaryexpr, p.m
 
-    @_('N UNARYEXPR')
+    @_('n unaryexpr')
     def m(self, p):
         return p.n, p.unaryexpr
 
@@ -240,7 +216,7 @@ class CalcParser(Parser):
     def n(self):
         return '%'
 
-    @_('R FACTOR')
+    @_('r factor')
     def unaryexpr(self, p):
         return p.r, p.factor
 
@@ -252,89 +228,121 @@ class CalcParser(Parser):
     def r(self):
         return '-'
 
-    @_('int_constant')
+    @_('INT_CONSTANT')
     def factor(self, p):
         return p.INT_CONSTANT
 
-    @_('float_constant')
+    @_('FLOAT_CONSTANT')
     def factor(self, p):
         return p.FLOAT_CONSTANT
 
-    @_('string_constant')
+    @_('STRING_CONSTANT')
     def factor(self, p):
         return p.STRING_CONSTANT
 
-    @_('null')
+    @_('NULL')
     def factor(self):
         return 'null'
 
-    @_('LVALUE')
+    @_('lvalue')
     def factor(self, p):
         return p.lvalue
 
-    @_('"(" NUMEXPRESSION ")"')
+    @_('"(" numexpression ")"')
     def factor(self, p):
         return p.numexpression
 
-    @_('ident K1')
+    @_('IDENT k1')
     def lvalue(self, p):
         return p.IDENT, p.k1
 
-    @_('O TERM L1')
+    @_('o term l1')
     def l1(self, p):
         return p.o, p.term, p.l1
 
-    @_('VARDECL";"')
+    @_('unaryexpr "*" unaryexpr')
+    def term(self, p):
+        return p.unaryexpr0, p.unaryexpr1
+
+    @_('unaryexpr "/" unaryexpr')
+    def term(self, p):
+        return p.unaryexpr0, p.unaryexpr1
+
+    @_('unaryexpr "%" unaryexpr')
+    def term(self, p):
+        return p.unaryexpr0, p.unaryexpr1
+
+    @_('vardecl ";"')
     def statement(self, p):
         return p.paramlist
 
-    @_('ATRIBSTAT";"')
+    @_('atribstat ";"')
     def statement(self, p):
         return p.atribstat
 
-    @_('PRINTSTAT";"')
+    @_('printstat ";"')
     def statement(self, p):
         return p.printstat
 
-    @_('READSTAT";"')
+    @_('readstat ";"')
     def statement(self, p):
         return p.readstat
 
-    @_('RETURNSTAT";"')
+    @_('returnstat ";"')
     def statement(self, p):
         return p.returnstat
 
-    @_('IFSTAT')
+    @_('ifstat')
     def statement(self, p):
         return p.ifstat
 
-    @_('FORSTAT')
+    @_('forstat')
     def statement(self, p):
         return p.forstat
 
-    @_('"{"STATELIST"}"')
+    @_('"{"statelist"}"')
     def statement(self, p):
         return p.statelist
 
-    @_('break";"')
+    @_('BREAK ";"')
     def statement(self, p):
         return p.BREAK
 
-    @_('STATEMENT')
+    @_('statement')
     def program(self, p):
         return p.estament
 
-    @_('FUNCLIST')
+    @_('funclist')
     def program(self, p):
         return p.funclist
 
-    @_('FUNCDEF FUNCLIST1')
+    @_('funcdef funclist1')
     def funclist(self, p):
         return p.funcdef, p.funclist1
 
-    @_('FUNCLIST')
+    @_('funclist')
     def funclist1(self, p):
         return p.funclist
+
+    @_('DEF IDENT "(" paramlist ")" "{" statelist "}"')
+    def funcdef(self, p):
+        return p.DEF, p.IDENT, p.paramlist, p.statelist
+
+    @_('INT IDENT paramlist1')
+    def paramlist(self, p):
+        return p.INT, p.IDENT, p.paramlist1
+
+    @_('FLOAT IDENT paramlist1')
+    def paramlist(self, p):
+        return p.FLOAT, p.IDENT, p.paramlist1
+
+    @_('STRING IDENT paramlist1')
+    def paramlist(self, p):
+        return p.STRING, p.IDENT, p.paramlist1
+
+    @_('paramlist')
+    def paramlist1(self, p):
+        return p.paramlist
 
     @_('IDENT "=" expr')
     def statement(self, p):
