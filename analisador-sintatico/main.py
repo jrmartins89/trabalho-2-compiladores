@@ -93,7 +93,7 @@ class CalcParser(Parser):
     def vardecl(self, p):
         return p.STRING + p.IDENT, p.z
 
-    @_('"["INT_CONSTANT"]" z')
+    @_('"[" INT_CONSTANT "]" z')
     def z(self, p):
         return p.INT_CONSTANT, p.z
 
@@ -305,7 +305,7 @@ class CalcParser(Parser):
     def statement(self, p):
         return p.forstat
 
-    @_('"{"statelist"}"')
+    @_('"{" statelist "}"')
     def statement(self, p):
         return p.statelist
 
