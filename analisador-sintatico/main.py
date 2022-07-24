@@ -27,16 +27,15 @@ from sly import Lexer, Parser
 
 class CalcLexer(Lexer):
     tokens = {DEF, INT, FLOAT, STRING, BREAK, IDENT, READ, NUMBER, LBRACE, PLUS, MINUS, TIMES, DIVIDE, ASSIGN, LPAREN,
-              RPAREN, RBRACE, FLOAT_CONSTANT,INT_CONSTANT, PRINT, RETURN, IF, ELSE, FOR, NEW, NULL}
+              RPAREN, RBRACE, FLOAT_CONSTANT,INT_CONSTANT, STRING_CONSTANT, PRINT, RETURN, IF, ELSE, FOR, NEW, NULL}
     ignore = ' \t'
-    literals = {'=', '+', '-', '*', '/', '(', ')', '%', 'return'}
+    literals = {'=', '+', '-', '*', '/', '(', ')', '%', 'return', '[', ']', ';'}
 
     # Tokens
     IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
     NUMBER = r'\d+'
     FLOAT_CONSTANT = r'[-+]?[0-9]*[.][0-9]'
-    INT_CONSTANT = r'[0-9]+'
-    RETURN = r'return'
+    INT_CONSTANT = r'[-+]?[0-9]'
 
     # Ignored pattern
     ignore_newline = r'\n+'
@@ -65,12 +64,15 @@ class CalcLexer(Lexer):
 
 
 class CalcParser(Parser):
+    debugfile = 'parser.out'
     tokens = CalcLexer.tokens
 
     precedence = (
         # ('left', IF, THEN), # note - if-then will be in sly-calc2.py
         ('left', PLUS, MINUS),
         ('left', TIMES, DIVIDE),
+        ('left', IDENT),
+        ('left', STRING_CONSTANT),
         ('right', UMINUS),
     )
 
@@ -95,6 +97,9 @@ class CalcParser(Parser):
     def statement(self, p):
         self.idents[p.IDENT] = p.expr
 
+    @_('IDENT')
+    def statement(self, p):
+        self.idents[p.IDENT] = p.expr
     # note - if-then will be in sly-calc2.py
     # @_('IF expr THEN statement')
     # def statement(self, p):
@@ -147,6 +152,10 @@ class CalcParser(Parser):
     @_('INT_CONSTANT')
     def expr(self, p):
         return int(p.INT_CONSTANT)
+
+    @_('STRING_CONSTANT')
+    def expr(self, p):
+        return p.STRING_CONSTANT
 
     @_('IDENT')
     def expr(self, p):
