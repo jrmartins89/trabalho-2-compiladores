@@ -26,7 +26,7 @@ from sly import Lexer, Parser
 
 
 class CalcLexer(Lexer):
-    tokens = {DEF, INT, FLOAT, STRING, BREAK, IDENT, READ, NUMBER, LBRACE, PLUS, MINUS, TIMES, DIVIDE, ASSIGN, LPAREN,
+    tokens = {DEF, INT, IGNORE, FLOAT, STRING, BREAK, IDENT, READ, NUMBER, LBRACE, PLUS, MINUS, TIMES, DIVIDE, ASSIGN, LPAREN,
               RPAREN, RBRACE, FLOAT_CONSTANT,INT_CONSTANT, STRING_CONSTANT, PRINT, RETURN, IF, ELSE, FOR, NEW, NULL}
     ignore = ' \t'
     literals = {'=', '+', '-', '*', '/', '(', ')', '%', '[', ']', ';' ','}
@@ -53,6 +53,7 @@ class CalcLexer(Lexer):
     FOR     = r'\bfor\b'
     NEW     = r'\bnew\b'
     NULL = r'\bnull\b'
+    IGNORE = r'\bignore\b'
 
     # Extra action for newlines
     def ignore_newline(self, t):
@@ -80,95 +81,99 @@ class CalcParser(Parser):
         self.prompt = True
         self.debug = False
 
-    @_('int ident Z')
+    @_('INT IDENT z')
     def vardecl(self, p):
         return p.INT + p.IDENT, p.z
 
-    @_('float ident Z')
+    @_('FLOAT IDENT z')
     def vardecl(self, p):
         return p.FLOAT + p.IDENT, p.z
 
-    @_('string ident Z')
+    @_('STRING IDENT z')
     def vardecl(self, p):
         return p.STRING + p.IDENT, p.z
 
-    @_('"["int_constant"]" Z')
+    @_('"["INT_CONSTANT"]" z')
     def z(self, p):
         return p.INT_CONSTANT, p.z
 
-    @_('lVALUE "=" ATRIBSTAT1')
+    @_('lvalue "=" atribstat1')
     def atribstat(self, p):
         return p.lvalue, p.atribstat1
 
-    @_('EXPRESSION')
+    @_('expression')
     def atribstat1(self, p):
         return p.expression
 
-    @_('ALLOCEXPRESSION')
+    @_('allocexpression')
     def atribstat1(self, p):
         return p.allocexpression
 
-    @_('FUNCCALL')
+    @_('funccall')
     def atribstat1(self, p):
         return p.funccall
 
-    @_('ident "(" PARAMLISTCALL1 ")" ')
+    @_('IDENT "(" paramlistcall ")" ')
+    def funccall(self, p):
+        return p.IDENT, p.paramlistcall
+
+    @_('IDENT paramlistcall1')
     def paramlistcall(self, p):
         return p.IDENT, p.paramlistcall1
 
-    @_('"," PARAMLISTCALL')
+    @_('"," paramlistcall')
     def paramlistcall1(self, p):
         return p.paramlistcall
 
-    @_('print EXPRESSION')
+    @_('PRINT expression')
     def printstat(self, p):
         return p.PRINT, p.expression
 
-    @_('read LVALUE')
+    @_('READ lvalue')
     def readstat(self, p):
         return p.PRINT, p.expression
 
-    @_('return')
+    @_('RETURN')
     def returnstat(self, p):
         return p.RETURN
 
-    @_('if "(" EXPRESSION ")" STATEMENT S')
+    @_('IF "(" expression ")" statement s')
     def ifstat(self, p):
         return p.IF, p.expression, p.statement, p.s
 
-    @_('else STATEMENT')
+    @_('ELSE statement')
     def s(self, p):
         return p.ELSE, p.statement
 
-    @_('ignore')
+    @_('IGNORE')
     def s(self, p):
-        return
+        return p.IGNORE
 
-    @_('for "(" ATRIBSTAT ";" EXPRESSION ";" ATRIBSTAT ")" STATEMENT')
+    @_('FOR "(" atribstat ";" expression ";" atribstat ")" statement')
     def forstat(self, p):
         return p.FOR, p.atribstat, p.expression, p.atribstat, p.statement
 
-    @_('STATEMENT STATELIST1')
+    @_('statelist statelist1')
     def statelist(self, p):
         return p.statelist, p.statelist1
 
-    @_('STATELIST')
+    @_('statelist')
     def statelist1(self, p):
         return p.statelist
 
-    @_('new T K')
+    @_('NEW t k')
     def allocexpression(self, p):
         return p.NEW, p.t, p.k
 
-    @_('int')
+    @_('INT')
     def t(self, p):
         return p.INT
 
-    @_('float')
+    @_('FLOAT')
     def t(self, p):
         return p.FLOAT
 
-    @_('string')
+    @_('STRING')
     def t(self, p):
         return p.STRING
 
