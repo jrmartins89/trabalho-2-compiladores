@@ -93,8 +93,8 @@ class CalcParser(Parser):
         return p.STRING + p.IDENT, p.z
 
     @_('"["int_constant"]" Z')
-    def vardecl(self, p):
-        return p.STRING + p.IDENT, p.z
+    def z(self, p):
+        return p.INT_CONSTANT, p.z
 
     @_('vardecl";"')
     def statement(self, p):
