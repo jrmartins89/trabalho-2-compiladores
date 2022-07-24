@@ -29,7 +29,7 @@ class CalcLexer(Lexer):
     tokens = {DEF, INT, FLOAT, STRING, BREAK, IDENT, READ, NUMBER, LBRACE, PLUS, MINUS, TIMES, DIVIDE, ASSIGN, LPAREN,
               RPAREN, RBRACE, FLOAT_CONSTANT,INT_CONSTANT, PRINT, RETURN, IF, ELSE, FOR, NEW, NULL}
     ignore = ' \t'
-    literals = {'=', '+', '-', '*', '/', '(', ')', '%'}
+    literals = {'=', '+', '-', '*', '/', '(', ')', '%', 'return'}
 
     # Tokens
     IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
@@ -49,7 +49,6 @@ class CalcLexer(Lexer):
     BREAK   = r'\bbreak\b'
     READ    = r'\bread\b'
     PRINT   = r'\bprint\b'
-    RETURN  = r'\breturn\b'
     IF      = r'\bif\b'
     ELSE    = r'\belse\b'
     FOR     = r'\bfor\b'
@@ -128,10 +127,6 @@ class CalcParser(Parser):
     @_('"-" expr %prec UMINUS')
     def expr(self, p):
         return -p.expr
-
-    @_('"(" expr ")"')
-    def expr(self, p):
-        return p.expr
 
     @_('"(" expr ")"')
     def expr(self, p):
