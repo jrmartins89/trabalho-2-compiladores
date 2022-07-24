@@ -26,13 +26,15 @@ from sly import Lexer, Parser
 
 
 class CalcLexer(Lexer):
-    tokens = {IDENT, NUMBER, LBRACE, PLUS, MINUS, TIMES, DIVIDE, ASSIGN, LPAREN, RPAREN, MOD, RBRACE, FLOAT_CONSTANT}
+    tokens = {DEF, INT, FLOAT, STRING, BREAK, IDENT, READ, NUMBER, LBRACE, PLUS, MINUS, TIMES, DIVIDE, ASSIGN, LPAREN,
+              RPAREN, MOD, RBRACE, FLOAT_CONSTANT,INT_CONSTANT, PRINT, RETURN, IF, ELSE, FOR, NEW, NULL}
     ignore = ' \t'
     # Tokens
     MOD = r'%'
     IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
     NUMBER = r'\d+'
     FLOAT_CONSTANT = r'[-+]?[0-9]*[.][0-9]'
+    INT_CONSTANT = r'[0-9]+'
 
     # NAME['if'] = IF # note - if-then will be in sly-calc2.py
     # NAME['then'] = THEN
@@ -50,6 +52,21 @@ class CalcLexer(Lexer):
 
     # Ignored pattern
     ignore_newline = r'\n+'
+
+    # reserved words
+    DEF     = r'def'
+    INT     = r'int'
+    FLOAT   = r'float'
+    STRING  = r'string'
+    BREAK   = r'\bbreak\b'
+    READ    = r'\bread\b'
+    PRINT   = r'\bprint\b'
+    RETURN  = r'\breturn\b'
+    IF      = r'\bif\b'
+    ELSE    = r'\belse\b'
+    FOR     = r'\bfor\b'
+    NEW     = r'\bnew\b'
+    NULL = r'\bnull\b'
 
     # Extra action for newlines
     def ignore_newline(self, t):
@@ -79,6 +96,10 @@ class CalcParser(Parser):
     def statement(self, p):
         print(p.expr)
 
+    @_('FLOAT')
+    def expr(self, p):
+        return p.FLOAT
+
     @_('IDENT ASSIGN expr')
     def statement(self, p):
         self.idents [p.IDENT] = p.expr
@@ -106,7 +127,7 @@ class CalcParser(Parser):
 
     @_('expr DIVIDE expr')
     def expr(self, p):
-        return p.expr0 / p.expr1
+        return p.expr0 // p.expr1
 
     @_('expr MOD expr')
     def expr(self, p):
@@ -128,9 +149,17 @@ class CalcParser(Parser):
     def expr(self, p):
         return int(p.NUMBER)
 
+    @_('NEW')
+    def expr(self, p):
+        return p.NEW
+
     @_('FLOAT_CONSTANT')
     def expr(self, p):
         return float(p.FLOAT_CONSTANT)
+
+    @_('INT_CONSTANT')
+    def expr(self, p):
+        return int(p.INT_CONSTANT)
 
     @_('IDENT')
     def expr(self, p):
@@ -176,9 +205,6 @@ def evaluate(tree):
             return evaluate(tree[2])
         else:
             return 0
-    elif rule == 'while':
-        while evaluate(tree[1]):
-            evaluate(tree[2])
 
 
 if __name__ == '__main__':
