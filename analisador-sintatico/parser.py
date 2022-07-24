@@ -6,7 +6,7 @@ class ParserAnalyser(Parser):
     # Carregar a lista de tokens do analisador lexico
     tokens = LexerAnalyser.tokens
 
-    #Regras gramaticais e açoes
+    # Regras gramaticais e açoes
     @_('STATEMENT')
     def program(self, p):
         return p.statement
@@ -176,7 +176,7 @@ class ParserAnalyser(Parser):
 
     @_('new T K  lbracket NUMEXPRESSION rbracket')
     def allocexpression(self, p):
-        return p.NEW, p.t, p.k, p.LBRACKET, p.numexpression,p.RBRACKET
+        return p.NEW, p.t, p.k, p.LBRACKET, p.numexpression, p.RBRACKET
 
     @_('int')
     def t(self, p):
@@ -191,7 +191,7 @@ class ParserAnalyser(Parser):
         return p.STRING
 
     @_('lbracket NUMEXPRESSION rbracket K')
-    def k(self,p):
+    def k(self, p):
         return p.LBRACKET, p.numexpression, p.RBRACKET, p.k
 
     @_('P  NUMEXPRESSION')
@@ -199,7 +199,7 @@ class ParserAnalyser(Parser):
         return p.p, p.numexpression
 
     @_('<')
-    def p(self,p):
+    def p(self, p):
         return p.LT
 
     @_('>')
@@ -240,7 +240,7 @@ class ParserAnalyser(Parser):
 
     @_('N   UNARYEXPR')
     def m(self, p):
-        return p.n,p.unaryexpr
+        return p.n, p.unaryexpr
 
     @_('*')
     def n(self, p):
@@ -275,7 +275,7 @@ class ParserAnalyser(Parser):
         return p.STRING_CONST
 
     @_('null')
-    def factor(self,p):
+    def factor(self, p):
         return p.NULL
 
     @_('LVALUE')
