@@ -27,28 +27,16 @@ from sly import Lexer, Parser
 
 class CalcLexer(Lexer):
     tokens = {DEF, INT, FLOAT, STRING, BREAK, IDENT, READ, NUMBER, LBRACE, PLUS, MINUS, TIMES, DIVIDE, ASSIGN, LPAREN,
-              RPAREN, MOD, RBRACE, FLOAT_CONSTANT,INT_CONSTANT, PRINT, RETURN, IF, ELSE, FOR, NEW, NULL}
+              RPAREN, RBRACE, FLOAT_CONSTANT,INT_CONSTANT, PRINT, RETURN, IF, ELSE, FOR, NEW, NULL}
     ignore = ' \t'
+    literals = {'=', '+', '-', '*', '/', '(', ')', '%'}
+
     # Tokens
-    MOD = r'%'
     IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
     NUMBER = r'\d+'
     FLOAT_CONSTANT = r'[-+]?[0-9]*[.][0-9]'
     INT_CONSTANT = r'[0-9]+'
-
-    # NAME['if'] = IF # note - if-then will be in sly-calc2.py
-    # NAME['then'] = THEN
-
-    # Special symbols
-    PLUS = r'\+'
-    MINUS = r'-'
-    TIMES = r'\*'
-    DIVIDE = r'/'
-    ASSIGN = r'='
-    LPAREN = r'\('
-    RPAREN = r'\)'
-    LBRACE = r'\{'
-    RBRACE = r'\}'
+    RETURN = r'return'
 
     # Ignored pattern
     ignore_newline = r'\n+'
@@ -83,7 +71,7 @@ class CalcParser(Parser):
     precedence = (
         # ('left', IF, THEN), # note - if-then will be in sly-calc2.py
         ('left', PLUS, MINUS),
-        ('left', TIMES, DIVIDE, MOD),
+        ('left', TIMES, DIVIDE),
         ('right', UMINUS),
     )
 
@@ -100,9 +88,13 @@ class CalcParser(Parser):
     def expr(self, p):
         return p.FLOAT
 
-    @_('IDENT ASSIGN expr')
+    @_('RETURN')
+    def expr(self, p):
+        return p.RETURN
+
+    @_('IDENT "=" expr')
     def statement(self, p):
-        self.idents [p.IDENT] = p.expr
+        self.idents[p.IDENT] = p.expr
 
     # note - if-then will be in sly-calc2.py
     # @_('IF expr THEN statement')
@@ -113,35 +105,35 @@ class CalcParser(Parser):
     # still working on it...
     # actually, needs a bit of reworking of things.  so doing that...
 
-    @_('expr PLUS expr')
+    @_('expr "+" expr')
     def expr(self, p):
         return p.expr0 + p.expr1
 
-    @_('expr MINUS expr')
+    @_('expr "-" expr')
     def expr(self, p):
         return p.expr0 - p.expr1
 
-    @_('expr TIMES expr')
+    @_('expr "*" expr')
     def expr(self, p):
         return p.expr0 * p.expr1
 
-    @_('expr DIVIDE expr')
+    @_('expr "/" expr')
     def expr(self, p):
         return p.expr0 // p.expr1
 
-    @_('expr MOD expr')
+    @_('expr "%" expr')
     def expr(self, p):
         return p.expr0 % p.expr1
 
-    @_('MINUS expr %prec UMINUS')
+    @_('"-" expr %prec UMINUS')
     def expr(self, p):
         return -p.expr
 
-    @_('LPAREN expr RPAREN')
+    @_('"(" expr ")"')
     def expr(self, p):
         return p.expr
 
-    @_('LBRACE expr RBRACE')
+    @_('"(" expr ")"')
     def expr(self, p):
         return p.expr
 
