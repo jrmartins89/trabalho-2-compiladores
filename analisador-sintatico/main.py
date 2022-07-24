@@ -73,7 +73,6 @@ class CalcParser(Parser):
         ('left', TIMES, DIVIDE),
         ('left', IDENT),
         ('left', STRING_CONSTANT),
-        ('right', UMINUS),
     )
 
     def __init__(self):
@@ -143,10 +142,6 @@ class CalcParser(Parser):
     def expr(self, p):
         return p.expr0 % p.expr1
 
-    @_('"-" expr %prec UMINUS')
-    def expr(self, p):
-        return -p.expr
-
     @_('"(" expr ")"')
     def expr(self, p):
         return p.expr
@@ -201,8 +196,6 @@ def evaluate(tree):
         return evaluate(tree[1]) - evaluate(tree[2])
     elif rule == 'divide':
         return evaluate(tree[1]) / evaluate(tree[2])
-    elif rule == 'uminus':
-        return -evaluate(tree[1])
     elif rule == 'number':
         return int(tree[1])
     elif rule == 'ident':
