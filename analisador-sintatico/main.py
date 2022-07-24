@@ -81,9 +81,23 @@ class CalcParser(Parser):
         self.prompt = True
         self.debug = False
 
-    @_('expr')
-    def statement(self, p):
-        print(p.expr)
+    @_('estatement')
+    def program(self, p):
+        return p.estament
+
+    @_('funclist')
+    def program(self, p):
+        return p.funclist
+
+    @_('funcdef funclist1')
+    def funclist(self, p):
+        return p.funcdef, p.funclist1
+
+    @_('funclist')
+    def funclist1(self, p):
+        return p.funclist
+
+
 
     @_('FLOAT')
     def expr(self, p):
