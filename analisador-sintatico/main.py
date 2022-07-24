@@ -128,6 +128,66 @@ class CalcParser(Parser):
     def printstat(self, p):
         return p.PRINT, p.expression
 
+    @_('return')
+    def returnstat(self, p):
+        return p.RETURN
+
+    @_('if "(" EXPRESSION ")" STATEMENT S')
+    def ifstat(self, p):
+        return p.IF, p.expression, p.statement, p.s
+
+    @_('else STATEMENT')
+    def s(self, p):
+        return p.ELSE, p.statement
+
+    @_('ignore')
+    def s(self, p):
+        return
+
+    @_('for "(" ATRIBSTAT ";" EXPRESSION ";" ATRIBSTAT ")" STATEMENT')
+    def forstat(self, p):
+        return p.FOR, p.atribstat, p.expression, p.atribstat, p.statement
+
+    @_('STATEMENT STATELIST1')
+    def statelist(self, p):
+        return p.statelist, p.statelist1
+
+    @_('STATELIST')
+    def statelist1(self, p):
+        return p.statelist
+
+    @_('new T K')
+    def allocexpression(self, p):
+        return p.NEW, p.t, p.k
+
+    @_('int')
+    def t(self, p):
+        return p.INT
+
+    @_('float')
+    def t(self, p):
+        return p.FLOAT
+
+    @_('string')
+    def t(self, p):
+        return p.STRING
+
+    @_(' "[" NUMEXPRESSION "]" k1')
+    def k(self, p):
+        return p.numexpression, p.k1
+
+    @_('K')
+    def k1(self, p):
+        return p.k
+
+    @_('NUMEXPRESSION G')
+    def expression(self, p):
+        return p.numexpression, p.g
+
+    @_('P NUMEXPRESSION')
+    def expression(self, p):
+        return p.p, p.numexpression
+
     @_('VARDECL";"')
     def statement(self, p):
         return p.paramlist
@@ -164,7 +224,7 @@ class CalcParser(Parser):
     def statement(self, p):
         return p.BREAK
 
-    @_('ESTATEMENT')
+    @_('STATEMENT')
     def program(self, p):
         return p.estament
 
