@@ -96,59 +96,67 @@ class CalcParser(Parser):
     def z(self, p):
         return p.INT_CONSTANT, p.z
 
-    @_('lvalue "=" atribstat1')
+    @_('lVALUE "=" ATRIBSTAT1')
     def atribstat(self, p):
         return p.lvalue, p.atribstat1
 
-    @_('expression')
+    @_('EXPRESSION')
     def atribstat1(self, p):
         return p.expression
 
-    @_('allocexpression')
+    @_('ALLOCEXPRESSION')
     def atribstat1(self, p):
         return p.allocexpression
 
-    @_('funccall')
+    @_('FUNCCALL')
     def atribstat1(self, p):
         return p.funccall
 
-    @_('ident "(" paramlistcall1 ")" ')
+    @_('ident "(" PARAMLISTCALL1 ")" ')
     def paramlistcall(self, p):
         return p.IDENT, p.paramlistcall1
 
-    @_('')
+    @_('"," PARAMLISTCALL')
     def paramlistcall1(self, p):
-        return p.IDENT, p.paramlistcall1
+        return p.paramlistcall
 
-    @_('vardecl";"')
+    @_('print EXPRESSION')
+    def printstat(self, p):
+        return p.PRINT, p.expression
+
+    @_('read LVALUE')
+    def printstat(self, p):
+        return p.PRINT, p.expression
+
+    @_('VARDECL";"')
     def statement(self, p):
         return p.paramlist
 
-    @_('atribstat";"')
+    @_('ATRIBSTAT";"')
     def statement(self, p):
         return p.atribstat
 
-    @_('printstat";"')
+    @_('PRINTSTAT";"')
     def statement(self, p):
         return p.printstat
 
-    @_('readstat";"')
+    @_('READSTAT";"')
     def statement(self, p):
         return p.readstat
 
-    @_('returnstat";"')
+    @_('RETURNSTAT";"')
     def statement(self, p):
         return p.returnstat
 
-    @_('ifstat')
+    @_('IFSTAT')
     def statement(self, p):
         return p.ifstat
 
-    @_('forstat')
+    @_('FORSTAT')
     def statement(self, p):
         return p.forstat
 
-    @_('"{"statelist"}"')
+    @_('"{"STATELIST"}"')
     def statement(self, p):
         return p.statelist
 
@@ -156,31 +164,21 @@ class CalcParser(Parser):
     def statement(self, p):
         return p.BREAK
 
-    @_('estatement')
+    @_('ESTATEMENT')
     def program(self, p):
         return p.estament
 
-    @_('funclist')
+    @_('FUNCLIST')
     def program(self, p):
         return p.funclist
 
-    @_('funcdef funclist1')
+    @_('FUNCDEF FUNCLIST1')
     def funclist(self, p):
         return p.funcdef, p.funclist1
 
-    @_('funclist')
+    @_('FUNCLIST')
     def funclist1(self, p):
         return p.funclist
-
-
-
-    @_('FLOAT')
-    def expr(self, p):
-        return p.FLOAT
-
-    @_('RETURN')
-    def expr(self, p):
-        return p.RETURN
 
     @_('IDENT "=" expr')
     def statement(self, p):
