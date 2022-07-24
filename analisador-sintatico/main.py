@@ -29,7 +29,7 @@ class CalcLexer(Lexer):
     tokens = {DEF, INT, FLOAT, STRING, BREAK, IDENT, READ, NUMBER, LBRACE, PLUS, MINUS, TIMES, DIVIDE, ASSIGN, LPAREN,
               RPAREN, RBRACE, FLOAT_CONSTANT,INT_CONSTANT, STRING_CONSTANT, PRINT, RETURN, IF, ELSE, FOR, NEW, NULL}
     ignore = ' \t'
-    literals = {'=', '+', '-', '*', '/', '(', ')', '%', 'return', '[', ']', ';' ','}
+    literals = {'=', '+', '-', '*', '/', '(', ')', '%', '[', ']', ';' ','}
 
     # Tokens
     IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
