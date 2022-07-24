@@ -80,6 +80,58 @@ class CalcParser(Parser):
         self.prompt = True
         self.debug = False
 
+    @_('int ident Z')
+    def vardecl(self, p):
+        return p.INT + p.IDENT, p.z
+
+    @_('float ident Z')
+    def vardecl(self, p):
+        return p.FLOAT + p.IDENT, p.z
+
+    @_('string ident Z')
+    def vardecl(self, p):
+        return p.STRING + p.IDENT, p.z
+
+    @_('"["int_constant"]" Z')
+    def vardecl(self, p):
+        return p.STRING + p.IDENT, p.z
+
+    @_('vardecl";"')
+    def statement(self, p):
+        return p.paramlist
+
+    @_('atribstat";"')
+    def statement(self, p):
+        return p.atribstat
+
+    @_('printstat";"')
+    def statement(self, p):
+        return p.printstat
+
+    @_('readstat";"')
+    def statement(self, p):
+        return p.readstat
+
+    @_('returnstat";"')
+    def statement(self, p):
+        return p.returnstat
+
+    @_('ifstat')
+    def statement(self, p):
+        return p.ifstat
+
+    @_('forstat')
+    def statement(self, p):
+        return p.forstat
+
+    @_('"{"statelist"}"')
+    def statement(self, p):
+        return p.statelist
+
+    @_('break";"')
+    def statement(self, p):
+        return p.BREAK
+
     @_('estatement')
     def program(self, p):
         return p.estament
