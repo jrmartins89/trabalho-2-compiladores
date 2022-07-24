@@ -29,7 +29,7 @@ class CalcLexer(Lexer):
     tokens = {DEF, INT, FLOAT, STRING, BREAK, IDENT, READ, NUMBER, LBRACE, PLUS, MINUS, TIMES, DIVIDE, ASSIGN, LPAREN,
               RPAREN, RBRACE, FLOAT_CONSTANT,INT_CONSTANT, STRING_CONSTANT, PRINT, RETURN, IF, ELSE, FOR, NEW, NULL}
     ignore = ' \t'
-    literals = {'=', '+', '-', '*', '/', '(', ')', '%', 'return', '[', ']', ';'}
+    literals = {'=', '+', '-', '*', '/', '(', ')', '%', 'return', '[', ']', ';' ','}
 
     # Tokens
     IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
@@ -95,6 +95,30 @@ class CalcParser(Parser):
     @_('"["int_constant"]" Z')
     def z(self, p):
         return p.INT_CONSTANT, p.z
+
+    @_('lvalue "=" atribstat1')
+    def atribstat(self, p):
+        return p.lvalue, p.atribstat1
+
+    @_('expression')
+    def atribstat1(self, p):
+        return p.expression
+
+    @_('allocexpression')
+    def atribstat1(self, p):
+        return p.allocexpression
+
+    @_('funccall')
+    def atribstat1(self, p):
+        return p.funccall
+
+    @_('ident "(" paramlistcall1 ")" ')
+    def paramlistcall(self, p):
+        return p.IDENT, p.paramlistcall1
+
+    @_('')
+    def paramlistcall1(self, p):
+        return p.IDENT, p.paramlistcall1
 
     @_('vardecl";"')
     def statement(self, p):
