@@ -265,17 +265,13 @@ class CalcParser(Parser):
     def l1(self, p):
         return p.o, p.term, p.l1
 
-    @_('unaryexpr "*" unaryexpr')
-    def term(self, p):
-        return p.unaryexpr0, p.unaryexpr1
+    @_('n unaryexpr')
+    def unaryexpr1(self, p):
+        return p.n, p.unaryexpr
 
-    @_('unaryexpr "/" unaryexpr')
+    @_('unaryexpr unaryexpr')
     def term(self, p):
-        return p.unaryexpr0, p.unaryexpr1
-
-    @_('unaryexpr "%" unaryexpr')
-    def term(self, p):
-        return p.unaryexpr0, p.unaryexpr1
+        return p.unaryexpr, p.unaryexpr1
 
     @_('vardecl ";"')
     def statement(self, p):
