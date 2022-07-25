@@ -96,6 +96,10 @@ class CalcParser(Parser):
     def z(self, p):
         return p.INT_CONSTANT, p.z
 
+    @_('term l')
+    def numexpression(self, p):
+        return p.term, p.l
+
     @_('numexpression g')
     def expression(self, p):
         return p.numexpression, p.g
@@ -196,10 +200,6 @@ class CalcParser(Parser):
     def g(self, p):
         return p.p, p.numexpression
 
-    @_('term l')
-    def numexpression(self, p):
-        return p.term, p.l
-
     @_('l1')
     def l(self, p):
         return p.l1
@@ -250,7 +250,7 @@ class CalcParser(Parser):
 
     @_('NULL')
     def factor(self):
-        return 'null'
+        return p.NULL
 
     @_('lvalue')
     def factor(self, p):
@@ -324,6 +324,10 @@ class CalcParser(Parser):
     def funclist1(self, p):
         return p.funclist
 
+    @_('paramlist')
+    def paramlist1(self, p):
+        return p.paramlist
+
     @_('INT IDENT paramlist1')
     def paramlist(self, p):
         return p.INT, p.IDENT, p.paramlist1
@@ -343,10 +347,6 @@ class CalcParser(Parser):
     @_('STRING IDENT paramlist1')
     def paramlist(self, p):
         return p.STRING, p.IDENT, p.paramlist1
-
-    @_('paramlist')
-    def paramlist1(self, p):
-        return p.paramlist
 
     @_('IDENT "=" expr')
     def statement(self, p):
