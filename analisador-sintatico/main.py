@@ -1,66 +1,65 @@
-# note - use python3
-# note - example from https://github.com/dabeaz/sly
-# note - type ctrl-d as the end of input.
-
-# notes on lexer
-# - tokens are compiled with re.verbose flag
-#   (comments with #, gets rid of white space).
-#   If you need to match # use \#
-# - tokens matched in order in your file.
-#   If you want to use == and =, put the rule for == first.
-# - sometimes there is more than one way to do something in the
-#   lexer.  for example, can have a separate rule for each keyword
-#   or catch them under a generic "ID" or "NAME" rule and use "token remapping"
-
-# -----------------------------------------------------------------------------
-# calc.py
-# -----------------------------------------------------------------------------
-
-# package isn't installed at the moment, so add the path so python can find it
+from sly import Lexer, Parser
 import sys
 
 slyPath = "/u1/h0/jkinne/public_html/cs420-s2019/code/sly-0.4"
 sys.path.append(slyPath)
 
-from sly import Lexer, Parser
-
 
 class CalcLexer(Lexer):
-    tokens = {DEF, INT, IGNORE, FLOAT, STRING, BREAK, IDENT, READ, NUMBER, LBRACE, PLUS, MINUS, TIMES, DIVIDE, ASSIGN, LPAREN,
-              RPAREN, RBRACE, FLOAT_CONSTANT,INT_CONSTANT, STRING_CONSTANT, PRINT, RETURN, IF, ELSE, FOR, NEW, NULL}
+    # Set of token names. This is always required
+    tokens = {NUMBER, STRING_CONSTANT, INT_CONSTANT, FLOAT_CONSTANT, IDENT, IF, ELSE, PRINT, PLUS, MINUS, TIMES,
+              DIVIDE, ASSIGN, EQ, LT, LE, GT, GE, NE, RETURN, FOR, NEW, DEF,
+              READ, IGNORE, BREAK, NULL, STRING, INT, FLOAT, REMAINDER}
+    literals = {'(', ')', '{', '}', ';', '[', ']', '%'}
+    # String containing ignored characters
     ignore = ' \t'
-    literals = {'=', '+', '-', '*', '/', '(', ')', '%', '[', ']', ';' ','}
+    # Regular expression rules for tokens
+    PLUS = r'\+'
+    MINUS = r'-'
+    TIMES = r'\*'
+    DIVIDE = r'/'
+    EQ = r'=='
+    ASSIGN = r'='
+    LE = r'<='
+    LT = r'<'
+    GE = r'>='
+    GT = r'>'
+    NE = r'!='
+    INT_CONSTANT = r'[0-9]+'
+    FLOAT_CONSTANT = r'(^[+-]?\d+(?:\.\d+)?(?:[eE][+-]\d+)?$)'
+    REMAINDER = r'%'
 
-    # Tokens
+    @_(r'\d+')
+    def number(self, t):
+        t.value = int(t.value)
+        return t
+
+    # Identifiers and keywords
     IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*'
-    NUMBER = r'\d+'
-    FLOAT_CONSTANT = r'[-+]?[0-9]*[.][0-9]'
-    INT_CONSTANT = r'[-+]?[0-9]'
+    IDENT['if'] = IF
+    IDENT['else'] = ELSE
+    IDENT['print'] = PRINT
+    IDENT['read'] = READ
+    IDENT['return'] = RETURN
+    IDENT['ignore'] = IGNORE
+    IDENT['new'] = NEW
+    IDENT['for'] = FOR
+    IDENT['null'] = NULL
+    IDENT['break'] = BREAK
+    IDENT['string'] = STRING
+    IDENT['float'] = FLOAT
+    IDENT['int'] = INT
 
-    # Ignored pattern
-    ignore_newline = r'\n+'
+    STRING_CONSTANT = r'[a-zA-Z\u00C0-\u00FF]+'
+    ignore_comment = r'\#.*'
 
-    # reserved words
-    DEF     = r'def'
-    INT     = r'int'
-    FLOAT   = r'float'
-    STRING  = r'string'
-    BREAK   = r'\bbreak\b'
-    READ    = r'\bread\b'
-    PRINT   = r'\bprint\b'
-    IF      = r'\bif\b'
-    ELSE    = r'\belse\b'
-    FOR     = r'\bfor\b'
-    NEW     = r'\bnew\b'
-    NULL = r'\bnull\b'
-    IGNORE = r'\bignore\b'
-
-    # Extra action for newlines
+    # Line number tracking
+    @_(r'\n+')
     def ignore_newline(self, t):
         self.lineno += t.value.count('\n')
 
     def error(self, t):
-        print("Illegal character '%s'" % t.value[0])
+        print('Line %d: Bad character %r' % (self.lineno, t.value[0]))
         self.index += 1
 
 
@@ -83,21 +82,29 @@ class CalcParser(Parser):
 
     @_('INT IDENT z')
     def vardecl(self, p):
-        return p.INT + p.IDENT, p.z
+        return p.INT, p.IDENT, p.z
 
     @_('FLOAT IDENT z')
     def vardecl(self, p):
-        return p.FLOAT + p.IDENT, p.z
+        return p.FLOAT, p.IDENT, p.z
 
     @_('STRING IDENT z')
     def vardecl(self, p):
-        return p.STRING + p.IDENT, p.z
+        return p.STRING, p.IDENT, p.z
 
     @_('"[" INT_CONSTANT "]" z')
     def z(self, p):
         return p.INT_CONSTANT, p.z
 
-    @_('lvalue "=" atribstat1')
+    @_('numexpression g')
+    def expression(self, p):
+        return p.numexpression, p.g
+
+    @_('expression')
+    def atribstat1(self, p):
+        return p.expression
+
+    @_('lvalue EQ atribstat1')
     def atribstat(self, p):
         return p.lvalue, p.atribstat1
 
@@ -185,10 +192,6 @@ class CalcParser(Parser):
     def k1(self, p):
         return p.k
 
-    @_('numexpression g')
-    def expression(self, p):
-        return p.numexpression, p.g
-
     @_('p numexpression')
     def g(self, p):
         return p.p, p.numexpression
@@ -209,29 +212,29 @@ class CalcParser(Parser):
     def m(self, p):
         return p.n, p.unaryexpr
 
-    @_('*')
-    def n(self):
-        return '*'
+    @_('PLUS')
+    def n(self, p):
+        return p.PLUS
 
-    @_('/')
-    def n(self):
-        return '/'
+    @_('DIVIDE')
+    def n(self, p):
+        return p.DIVIDE
 
-    @_('%')
-    def n(self):
-        return '%'
+    @_('REMAINDER')
+    def n(self, p):
+        return p.REMAINDER
 
     @_('r factor')
     def unaryexpr(self, p):
         return p.r, p.factor
 
-    @_('+')
-    def r(self):
-        return '+'
+    @_('PLUS')
+    def r(self, p):
+        return p.PLUS
 
-    @_('-')
-    def r(self):
-        return '-'
+    @_('MINUS')
+    def r(self, p):
+        return p.MINUS
 
     @_('INT_CONSTANT')
     def factor(self, p):
@@ -269,13 +272,9 @@ class CalcParser(Parser):
     def unaryexpr1(self, p):
         return p.n, p.unaryexpr
 
-    @_('unaryexpr unaryexpr')
+    @_('unaryexpr unaryexpr1')
     def term(self, p):
         return p.unaryexpr, p.unaryexpr1
-
-    @_('vardecl ";"')
-    def statement(self, p):
-        return p.paramlist
 
     @_('atribstat ";"')
     def statement(self, p):
@@ -325,17 +324,21 @@ class CalcParser(Parser):
     def funclist1(self, p):
         return p.funclist
 
-    @_('DEF IDENT "(" paramlist ")" "{" statelist "}"')
-    def funcdef(self, p):
-        return p.DEF, p.IDENT, p.paramlist, p.statelist
-
     @_('INT IDENT paramlist1')
     def paramlist(self, p):
         return p.INT, p.IDENT, p.paramlist1
 
+    @_('vardecl ";"')
+    def statement(self, p):
+        return p.paramlist
+
     @_('FLOAT IDENT paramlist1')
     def paramlist(self, p):
         return p.FLOAT, p.IDENT, p.paramlist1
+
+    @_('DEF IDENT "(" paramlist ")" "{" statelist "}"')
+    def funcdef(self, p):
+        return p.DEF, p.IDENT, p.paramlist, p.statelist
 
     @_('STRING IDENT paramlist1')
     def paramlist(self, p):
@@ -352,6 +355,50 @@ class CalcParser(Parser):
     @_('IDENT')
     def statement(self, p):
         self.idents[p.IDENT] = p.expr
+
+    @_('LT')
+    def p(self, p):
+        return p.LT
+
+    @_('GT')
+    def p(self, p):
+        return p.GT
+
+    @_('EQ')
+    def p(self, p):
+        return p.EQ
+
+    @_('LE')
+    def p(self, p):
+        return p.LE
+
+    @_('GE')
+    def p(self, p):
+        return p.GE
+
+    @_('NE')
+    def p(self, p):
+        return p.NE
+
+    @_('PLUS')
+    def p(self, p):
+        return p.PLUS
+
+    @_('DIVIDE')
+    def p(self, p):
+        return p.DIVIDE
+
+    @_('MINUS')
+    def p(self, p):
+        return p.MINUS
+
+    @_('ASSIGN')
+    def p(self, p):
+        return p.ASSIGN
+
+    @_('TIMES')
+    def p(self, p):
+        return p.TIMES
     # note - if-then will be in sly-calc2.py
     # @_('IF expr THEN statement')
     # def statement(self, p):
@@ -387,7 +434,7 @@ class CalcParser(Parser):
 
     @_('NUMBER')
     def expr(self, p):
-        return int(p.NUMBER)
+        return int(p.number)
 
     @_('NEW')
     def expr(self, p):
@@ -414,43 +461,13 @@ class CalcParser(Parser):
             return 0
 
 
-def evaluate(tree):
-    global idents
-
-    rule = tree[0]
-    if rule == 'statement-expr':
-        value = evaluate(tree[1])
-        print(value)
-        return value
-    elif rule == 'assign':
-        value = evaluate(tree[2])
-        ident = tree[1]
-        idents[ident] = value
-        return value
-    elif rule == 'times':
-        return evaluate(tree[1]) * evaluate(tree[2])
-    elif rule == 'plus':
-        return evaluate(tree[1]) + evaluate(tree[2])
-    elif rule == 'minus':
-        return evaluate(tree[1]) - evaluate(tree[2])
-    elif rule == 'divide':
-        return evaluate(tree[1]) / evaluate(tree[2])
-    elif rule == 'number':
-        return int(tree[1])
-    elif rule == 'ident':
-        return idents[tree[1]]
-    elif rule == 'paren':
-        return evaluate(tree[1])
-    elif rule == 'if-then':
-        value = evaluate(tree[1])
-        if value:
-            return evaluate(tree[2])
-        else:
-            return 0
-
-
 if __name__ == '__main__':
+    data = ''
     lexer = CalcLexer()
+
+    for tok in lexer.tokenize(data):
+        print(tok)
+
     parser = CalcParser()
     while True:
         try:
