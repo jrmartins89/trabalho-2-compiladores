@@ -1,13 +1,16 @@
 from sly import Lexer
 
 
-class LexerAnalyser(Lexer):
-    # Conjunto de tokens. Sempre é necessário.
+class GCCLexer(Lexer):
+    # Set of token names.   This is always required
     tokens = {DEF, IDENT, NUMBER, PLUS, MINUS, TIMES,
-     DIVIDE, ASSIGN, LPAREN, RPAREN, LBRACE,
-     RBRACE, LBRACKET, RBRACKET, INT, FLOAT, STRING,
-     SEMICOL, BREAK, COL, READ, PRINT, RETURN, IF, ELSE, FOR, NEW,
-     GT, LT, GE, LE, EQ, NOTEQ, REMAINDER, INT_CONSTANT, FLOAT_CONSTANT, STRING_CONSTANT, NULL}
+              DIVIDE, ASSIGN, LPAREN, RPAREN, LBRACE,
+              RBRACE, LBRACKET, RBRACKET, INT, FLOAT, STRING,
+              SEMICOL, BREAK, COL, READ, PRINT, RETURN, IF, ELSE, FOR, NEW,
+              GT, LT, GE, LE, EQ, NOTEQ, REMAINDER, INT_CONSTANT, FLOAT_CONSTANT, STRING_CONSTANT, NULL}
+
+    # String containing ignored characters between tokens
+    ignore = ' \t'
 
     # reserved words
     DEF = r'\bdef\b'
@@ -51,13 +54,9 @@ class LexerAnalyser(Lexer):
 
     # Numbers
     INT_CONSTANT = r'[0-9]+'
-    FLOAT_CONSTANT = r'[+-]?[0-9]+\.[0-9]+'
 
     # Strings
     STRING_CONSTANT = r'[a-zA-Z\u00C0-\u00FF]+'
-
-    # String que contém os caracteres ignorados entre os tokens
-    ignore = ' \t'
 
     @_(r'\d+')
     def NUMBER(self, t):
@@ -71,10 +70,3 @@ class LexerAnalyser(Lexer):
     @_(r'\n+')
     def newLine(self, t):
         self.lineno = t.value.count('\n')
-
-
-if __name__ == '__main__':
-    data = 'x = 3 + 42 * (s - t)'
-    lexer = LexerAnalyser()
-    for tok in lexer.tokenize(data):
-        print('type=%r, value=%r' % (tok.type, tok.value))
