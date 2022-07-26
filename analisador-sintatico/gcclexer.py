@@ -3,16 +3,16 @@ from sly import Lexer
 
 class GCCLexer(Lexer):
     # Set of token names.   This is always required
-    tokens = {DEF, IDENT, PLUS, MINUS, TIMES,
+    tokens = {DEF, IDENT, NUMBER, PLUS, MINUS, TIMES,
               DIVIDE, ASSIGN, LPAREN, RPAREN, LBRACE,
               RBRACE, LBRACKET, RBRACKET, INT, FLOAT, STRING,
               SEMICOL, BREAK, COL, READ, PRINT, RETURN, IF, ELSE, FOR, NEW,
-              GT, LT, GE, LE, EQ, NOTEQ, REMAINDER, IGNORE, INT_CONSTANT, FLOAT_CONSTANT, STRING_CONSTANT, NULL}
+              GT, LT, GE, LE, EQ, NOTEQ, REMAINDER, INT_CONSTANT, FLOAT_CONSTANT, STRING_CONSTANT, NULL}
 
     # String containing ignored characters between tokens
+    ignore = ' \t'
 
     # reserved words
-    IGNORE = r'\t'
     DEF = r'\bdef\b'
     INT = r'\bint\b'
     FLOAT = r'\bfloat\b'
@@ -54,9 +54,25 @@ class GCCLexer(Lexer):
 
     # Numbers
     INT_CONSTANT = r'[0-9]+'
+    FLOAT_CONSTANT = r'[0-9]+(.[0-9]*)?'
 
     # Strings
-    STRING_CONSTANT = r'[a-zA-Z\u00C0-\u00FF]+'
+    STRING_CONSTANT = r'''("[^"\\]*(\\.[^"\\]*)*"|'[^'\\]*(\\.[^'\\]*)*')'''
+
+    @_(r'\d+')
+    def INT_CONSTANT(self, t):
+        t.value = int(t.value)
+        return t
+
+    @_(r'[0-9]+(.[0-9]*)?')
+    def FLOAT_CONSTANT(self, t):
+        t.value = float(t.value)
+        return t
+
+    @_(r'\"[a-zA-Z\u00C0-\u00FF]+\"')
+    def STRING_CONSTANT(self, t):
+        t.value = self.remove_quotes(t.value)
+        return t
 
     @_(r'#.*')
     def COMMENT(self, t):
@@ -65,3 +81,8 @@ class GCCLexer(Lexer):
     @_(r'\n+')
     def newLine(self, t):
         self.lineno = t.value.count('\n')
+
+    def remove_quotes(self, text: str):
+        if text.startswith('\"') or text.startswith('\''):
+            return text[1:-1]
+        return text

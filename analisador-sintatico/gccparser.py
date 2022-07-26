@@ -34,6 +34,10 @@ class GCCParser(Parser):
     def program(self, p):
         return p.empty
 
+    @_('')
+    def funclist(self, p):
+        return p.empty
+
     @_('funcdef funclist1')
     def funclist(self, p):
         return p.funcdef, p.funclist1
@@ -49,6 +53,10 @@ class GCCParser(Parser):
     @_('DEF IDENT LPAREN paramlist RPAREN LBRACE statelist RBRACE')
     def funcdef(self, p):
         return p.DEF, p.IDENT, p.LPAREN, p.paramlist, p.RPAREN, p.LBRACE, p.statelist, p.RBRACE
+
+    @_('')
+    def statelist(self, p):
+        return p.empty
 
     @_('INT IDENT paramlist1')
     def paramlist(self, p):
@@ -189,10 +197,6 @@ class GCCParser(Parser):
     @_('ELSE statement')
     def s(self, p):
         return p.ELSE, p.statement
-
-    @_('IGNORE')
-    def s(self, p):
-        return p.IGNORE
 
     @_('FOR LPAREN atribstat SEMICOL expression SEMICOL atribstat RPAREN statement')
     def forstat(self, p):
