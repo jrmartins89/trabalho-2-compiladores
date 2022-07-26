@@ -130,7 +130,11 @@ class GCCParser(Parser):
     def z(self, p):
         return p.LBRACKET, p.INT_CONSTANT, p.RBRACKET, p.z
 
-    @_('lvalue "=" atribstat1')
+    @_('')
+    def z(self, p):
+        return p.empty
+
+    @_('lvalue ASSIGN atribstat1')
     def atribstat(self, p):
         return p.lvalue, p.atribstat1
 
@@ -146,17 +150,25 @@ class GCCParser(Parser):
     def atribstat1(self, p):
         return p.funccall
 
-    @_('IDENT "(" paramlistcall ")" ')
+    @_('IDENT LPAREN paramlistcall RPAREN ')
     def funccall(self, p):
-        return p.IDENT, p.paramlistcall
+        return p.IDENT, p.LPAREN, p.paramlistcall, p.RPAREN
 
     @_('IDENT paramlistcall1')
     def paramlistcall(self, p):
         return p.IDENT, p.paramlistcall1
 
-    @_('"," paramlistcall')
+    @_('')
+    def paramlistcall(self, p):
+        return p.empty
+
+    @_('COL paramlistcall')
     def paramlistcall1(self, p):
-        return p.paramlistcall
+        return p.COL, p.paramlistcall
+
+    @_('')
+    def paramlistcall1(self, p):
+        return p.empty
 
     @_('PRINT expression')
     def printstat(self, p):
