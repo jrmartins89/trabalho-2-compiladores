@@ -210,7 +210,6 @@ class GCCParser(Parser):
     def statelist1(self, p):
         return p.empty
 
-
     @_('NEW t k')
     def allocexpression(self, p):
         return p.NEW, p.t, p.k
