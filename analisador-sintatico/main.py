@@ -104,10 +104,6 @@ class CalcParser(Parser):
     def expression(self, p):
         return p.numexpression, p.g
 
-    @_('expression')
-    def atribstat1(self, p):
-        return p.expression
-
     @_('lvalue EQ atribstat1')
     def atribstat(self, p):
         return p.lvalue, p.atribstat1
