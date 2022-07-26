@@ -1,13 +1,8 @@
 from lexeranalyser import GCCLexer
 
 if __name__ == '__main__':
+    data = 'x = 3 + 42 * (s - t)'
     lexer = GCCLexer()
-    while True:
-        try:
-            text = input('basic > ')
-        except EOFError:
-            break
-        if text:
-            lex = lexer.tokenize(text)
-            for token in lex:
-                print(token)
+    for tok in lexer.tokenize(data):
+        print('type=%r, value=%r' % (tok.type, tok.value))
+
