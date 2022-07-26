@@ -1,5 +1,5 @@
 from sly import Parser
-from lexeranalyser import GCCLexer
+from gcclexer import GCCLexer
 
 
 class GCCParser(Parser):

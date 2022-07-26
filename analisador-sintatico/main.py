@@ -1,4 +1,4 @@
-from lexeranalyser import GCCLexer
+from gcclexer import GCCLexer
 from gccparser import GCCParser
 
 if __name__ == '__main__':
