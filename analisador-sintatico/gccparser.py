@@ -120,11 +120,11 @@ class GCCParser(Parser):
 
     @_('FLOAT IDENT z')
     def vardecl(self, p):
-        return p.FLOAT , p.IDENT, p.z
+        return p.FLOAT, p.IDENT, p.z
 
     @_('STRING IDENT z')
     def vardecl(self, p):
-        return p.STRING , p.IDENT, p.z
+        return p.STRING, p.IDENT, p.z
 
     @_('LBRACKET INT_CONSTANT RBRACKET z')
     def z(self, p):
