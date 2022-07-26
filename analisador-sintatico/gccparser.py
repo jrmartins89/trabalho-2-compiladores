@@ -6,17 +6,11 @@ class GCCParser(Parser):
     tokens = GCCLexer.tokens
 
     precedence = (
-        # ('left', IF, THEN), # note - if-then will be in sly-calc2.py
         ('left', PLUS, MINUS),
         ('left', TIMES, DIVIDE),
         ('left', IDENT),
         ('left', STRING_CONSTANT),
     )
-
-    def __init__(self):
-        self.idents = {}
-        self.prompt = True
-        self.debug = False
 
     @_('')
     def empty(self, p):
