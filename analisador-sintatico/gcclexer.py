@@ -3,7 +3,7 @@ from sly import Lexer
 
 class GCCLexer(Lexer):
     # Set of token names.   This is always required
-    tokens = {DEF, IDENT, NUMBER, PLUS, MINUS, TIMES,
+    tokens = {DEF, IDENT, PLUS, MINUS, TIMES,
               DIVIDE, ASSIGN, LPAREN, RPAREN, LBRACE,
               RBRACE, LBRACKET, RBRACKET, INT, FLOAT, STRING,
               SEMICOL, BREAK, COL, READ, PRINT, RETURN, IF, ELSE, FOR, NEW,
@@ -57,11 +57,6 @@ class GCCLexer(Lexer):
 
     # Strings
     STRING_CONSTANT = r'[a-zA-Z\u00C0-\u00FF]+'
-
-    @_(r'\d+')
-    def NUMBER(self, t):
-        t.value = int(t.value)
-        return t
 
     @_(r'#.*')
     def COMMENT(self, t):

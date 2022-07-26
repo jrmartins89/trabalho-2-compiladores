@@ -182,9 +182,9 @@ class GCCParser(Parser):
     def returnstat(self, p):
         return p.RETURN
 
-    @_('IF "(" expression ")" statement s')
+    @_('IF LPAREN expression RPAREN statement s')
     def ifstat(self, p):
-        return p.IF, p.expression, p.statement, p.s
+        return p.IF, p.LPAREN, p.expression, p.RPAREN, p.statement, p.s
 
     @_('ELSE statement')
     def s(self, p):
@@ -194,9 +194,9 @@ class GCCParser(Parser):
     def s(self, p):
         return p.IGNORE
 
-    @_('FOR "(" atribstat ";" expression ";" atribstat ")" statement')
+    @_('FOR LPAREN atribstat SEMICOL expression SEMICOL atribstat RPAREN statement')
     def forstat(self, p):
-        return p.FOR, p.atribstat, p.expression, p.atribstat, p.statement
+        return p.FOR, p.LPAREN, p.atribstat, p.SEMICOL, p.expression, p.SEMICOL, p.atribstat, p.RPAREN, p.statement
 
     @_('statelist statelist1')
     def statelist(self, p):
@@ -205,6 +205,11 @@ class GCCParser(Parser):
     @_('statelist')
     def statelist1(self, p):
         return p.statelist
+
+    @_('')
+    def statelist1(self, p):
+        return p.empty
+
 
     @_('NEW t k')
     def allocexpression(self, p):
@@ -222,13 +227,17 @@ class GCCParser(Parser):
     def t(self, p):
         return p.STRING
 
-    @_(' "[" numexpression "]" k1')
+    @_('LBRACKET numexpression RBRACKET k1')
     def k(self, p):
-        return p.numexpression, p.k1
+        return p.LBRACKET, p.numexpression, p.RBRACKET, p.k1
 
     @_('k')
     def k1(self, p):
         return p.k
+
+    @_('')
+    def k1(self, p):
+        return p.empty
 
     @_('numexpression g')
     def expression(self, p):
@@ -237,6 +246,34 @@ class GCCParser(Parser):
     @_('p numexpression')
     def g(self, p):
         return p.p, p.numexpression
+
+    @_('')
+    def g(self, p):
+        return p.empty
+
+    @_('LT')
+    def p(self, p):
+        return p.LT
+
+    @_('GT')
+    def p(self, p):
+        return p.GT
+
+    @_('LE')
+    def p(self, p):
+        return p.LE
+
+    @_('GE')
+    def p(self, p):
+        return p.GE
+
+    @_('EQ')
+    def p(self, p):
+        return p.EQ
+
+    @_('NOTEQ')
+    def p(self, p):
+        return p.NOTEQ
 
     @_('term l')
     def numexpression(self, p):
@@ -254,29 +291,45 @@ class GCCParser(Parser):
     def m(self, p):
         return p.n, p.unaryexpr
 
-    @_('*')
-    def n(self):
-        return '*'
+    @_('')
+    def m(self, p):
+        return p.empty
 
-    @_('/')
-    def n(self):
-        return '/'
+    @_('TIMES')
+    def n(self, p):
+        return p.TIMES
 
-    @_('%')
-    def n(self):
-        return '%'
+    @_('DIVIDE')
+    def n(self, p):
+        return p.DIVIDE
+
+    @_('REMAINDER')
+    def n(self, p):
+        return p.REMAINDER
+
+    @_('n unaryexpr')
+    def unaryexpr1(self, p):
+        return p.n, p.unaryexpr
+
+    @_('unaryexpr unaryexpr1')
+    def term(self, p):
+        return p.unaryexpr, p.unaryexpr1
 
     @_('r factor')
     def unaryexpr(self, p):
         return p.r, p.factor
 
-    @_('+')
-    def r(self):
-        return '+'
+    @_('PLUS')
+    def r(self, p):
+        return p.PLUS
 
-    @_('-')
-    def r(self):
-        return '-'
+    @_('MINUS')
+    def r(self, p):
+        return p.MINUS
+
+    @_('')
+    def r(self, p):
+        return p.empty
 
     @_('INT_CONSTANT')
     def factor(self, p):
@@ -292,15 +345,15 @@ class GCCParser(Parser):
 
     @_('NULL')
     def factor(self):
-        return 'null'
+        return p.NULL
 
     @_('lvalue')
     def factor(self, p):
         return p.lvalue
 
-    @_('"(" numexpression ")"')
+    @_('LPAREN numexpression RPAREN')
     def factor(self, p):
-        return p.numexpression
+        return p.LPAREN, p.numexpression, p.RPAREN
 
     @_('IDENT k1')
     def lvalue(self, p):
@@ -310,126 +363,9 @@ class GCCParser(Parser):
     def l1(self, p):
         return p.o, p.term, p.l1
 
-    @_('n unaryexpr')
-    def unaryexpr1(self, p):
-        return p.n, p.unaryexpr
-
-    @_('unaryexpr unaryexpr1')
-    def term(self, p):
-        return p.unaryexpr, p.unaryexpr1
-
-    @_('IDENT "=" expr')
-    def statement(self, p):
-        self.idents[p.IDENT] = p.expr
-
-    @_('IDENT')
-    def statement(self, p):
-        self.idents[p.IDENT] = p.expr
-
-    @_('LT')
-    def p(self, p):
-        return p.LT
-
-    @_('GT')
-    def p(self, p):
-        return p.GT
-
-    @_('EQ')
-    def p(self, p):
-        return p.EQ
-
-    @_('LE')
-    def p(self, p):
-        return p.LE
-
-    @_('GE')
-    def p(self, p):
-        return p.GE
-
-    @_('NOTEQ')
-    def p(self, p):
-        return p.NOTEQ
-
-    @_('PLUS')
-    def p(self, p):
-        return p.PLUS
-
-    @_('DIVIDE')
-    def p(self, p):
-        return p.DIVIDE
-
-    @_('MINUS')
-    def p(self, p):
-        return p.MINUS
-
-    @_('ASSIGN')
-    def p(self, p):
-        return p.ASSIGN
-
-    @_('TIMES')
-    def p(self, p):
-        return p.TIMES
-
-    # note - if-then will be in sly-calc2.py
-    # @_('IF expr THEN statement')
-    # def statement(self, p):
-    #    if p.expr:
-    #        self.statement(p.statement)
-    # NOTE - this will be fixed in like 15 minutes.
-    # still working on it...
-    # actually, needs a bit of reworking of things.  so doing that...
-
-    @_('expr "+" expr')
-    def expr(self, p):
-        return p.expr0 + p.expr1
-
-    @_('expr "-" expr')
-    def expr(self, p):
-        return p.expr0 - p.expr1
-
-    @_('expr "*" expr')
-    def expr(self, p):
-        return p.expr0 * p.expr1
-
-    @_('expr "/" expr')
-    def expr(self, p):
-        return p.expr0 // p.expr1
-
-    @_('expr "%" expr')
-    def expr(self, p):
-        return p.expr0 % p.expr1
-
-    @_('"(" expr ")"')
-    def expr(self, p):
-        return p.expr
-
-    @_('NUMBER')
-    def expr(self, p):
-        return int(p.number)
-
-    @_('NEW')
-    def expr(self, p):
-        return p.NEW
-
-    @_('FLOAT_CONSTANT')
-    def expr(self, p):
-        return float(p.FLOAT_CONSTANT)
-
-    @_('INT_CONSTANT')
-    def expr(self, p):
-        return int(p.INT_CONSTANT)
-
-    @_('STRING_CONSTANT')
-    def expr(self, p):
-        return p.STRING_CONSTANT
-
-    @_('IDENT')
-    def expr(self, p):
-        try:
-            return self.idents[p.IDENT]
-        except LookupError:
-            print(f'Undefined ident {p.IDENT!r}')
-            return 0
+    @_('')
+    def l1(self, p):
+        return p.empty
 
 
 if __name__ == '__main__':
