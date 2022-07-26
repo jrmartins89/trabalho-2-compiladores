@@ -22,18 +22,6 @@ class GCCParser(Parser):
     def empty(self, p):
         pass
 
-    @_('statement')
-    def program(self, p):
-        return p.estament
-
-    @_('funclist')
-    def program(self, p):
-        return p.funclist
-
-    @_('')
-    def program(self, p):
-        return p.empty
-
     @_('')
     def funclist(self, p):
         return p.empty
@@ -369,16 +357,3 @@ class GCCParser(Parser):
     @_('')
     def l1(self, p):
         return p.empty
-
-
-if __name__ == '__main__':
-    lexer = GCCLexer()
-    parser = GCCParser()
-
-    while True:
-        try:
-            text = input('calc > ')
-            result = parser.parse(lexer.tokenize(text))
-            print(result)
-        except EOFError:
-            break
