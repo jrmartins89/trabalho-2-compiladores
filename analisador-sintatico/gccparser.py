@@ -66,21 +66,69 @@ class GCCParser(Parser):
     def paramlist(self, p):
         return p.empty
 
+    @_('COL paramlist')
+    def paramlist1(self, p):
+        return p.COL, p.paramlist
+
+    @_('')
+    def paramlist1(self, p):
+        return p.empty
+
+    @_('vardecl SEMICOL')
+    def statement(self, p):
+        return p.vardecl, p.SEMICOL
+
+    @_('atribstat SEMICOL')
+    def statement(self, p):
+        return p.atribstat, p.SEMICOL
+
+    @_('printstat SEMICOL')
+    def statement(self, p):
+        return p.printstat, p.SEMICOL
+
+    @_('readstat SEMICOL')
+    def statement(self, p):
+        return p.readstat, p.SEMICOL
+
+    @_('returnstat SEMICOL')
+    def statement(self, p):
+        return p.returnstat, p.SEMICOL
+
+    @_('ifstat')
+    def statement(self, p):
+        return p.ifstat
+
+    @_('forstat')
+    def statement(self, p):
+        return p.forstat
+
+    @_('LBRACE statelist RBRACE')
+    def statement(self, p):
+        return p.statelist
+
+    @_('BREAK SEMICOL')
+    def statement(self, p):
+        return p.BREAK, p.SEMICOL
+
+    @_('SEMICOL')
+    def statement(self, p):
+        return p.SEMICOL
+
     @_('INT IDENT z')
     def vardecl(self, p):
-        return p.INT + p.IDENT, p.z
+        return p.INT, p.IDENT, p.z
 
     @_('FLOAT IDENT z')
     def vardecl(self, p):
-        return p.FLOAT + p.IDENT, p.z
+        return p.FLOAT , p.IDENT, p.z
 
     @_('STRING IDENT z')
     def vardecl(self, p):
-        return p.STRING + p.IDENT, p.z
+        return p.STRING , p.IDENT, p.z
 
-    @_('"[" INT_CONSTANT "]" z')
+    @_('LBRACKET INT_CONSTANT RBRACKET z')
     def z(self, p):
-        return p.INT_CONSTANT, p.z
+        return p.LBRACKET, p.INT_CONSTANT, p.RBRACKET, p.z
 
     @_('lvalue "=" atribstat1')
     def atribstat(self, p):
@@ -257,50 +305,6 @@ class GCCParser(Parser):
     @_('unaryexpr unaryexpr1')
     def term(self, p):
         return p.unaryexpr, p.unaryexpr1
-
-    @_('vardecl ";"')
-    def statement(self, p):
-        return p.paramlist
-
-    @_('atribstat ";"')
-    def statement(self, p):
-        return p.atribstat
-
-    @_('printstat ";"')
-    def statement(self, p):
-        return p.printstat
-
-    @_('readstat ";"')
-    def statement(self, p):
-        return p.readstat
-
-    @_('returnstat ";"')
-    def statement(self, p):
-        return p.returnstat
-
-    @_('ifstat')
-    def statement(self, p):
-        return p.ifstat
-
-    @_('forstat')
-    def statement(self, p):
-        return p.forstat
-
-    @_('"{" statelist "}"')
-    def statement(self, p):
-        return p.statelist
-
-    @_('BREAK ";"')
-    def statement(self, p):
-        return p.BREAK
-
-    @_('paramlist')
-    def paramlist1(self, p):
-        return p.paramlist
-
-    @_('')
-    def paramlist1(self, p):
-        return p.empty
 
     @_('IDENT "=" expr')
     def statement(self, p):
