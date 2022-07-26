@@ -7,12 +7,12 @@ class GCCLexer(Lexer):
               DIVIDE, ASSIGN, LPAREN, RPAREN, LBRACE,
               RBRACE, LBRACKET, RBRACKET, INT, FLOAT, STRING,
               SEMICOL, BREAK, COL, READ, PRINT, RETURN, IF, ELSE, FOR, NEW,
-              GT, LT, GE, LE, EQ, NOTEQ, REMAINDER, INT_CONSTANT, FLOAT_CONSTANT, STRING_CONSTANT, NULL}
+              GT, LT, GE, LE, EQ, NOTEQ, REMAINDER, IGNORE, INT_CONSTANT, FLOAT_CONSTANT, STRING_CONSTANT, NULL}
 
     # String containing ignored characters between tokens
-    ignore = ' \t'
 
     # reserved words
+    IGNORE = r'\t'
     DEF = r'\bdef\b'
     INT = r'\bint\b'
     FLOAT = r'\bfloat\b'
