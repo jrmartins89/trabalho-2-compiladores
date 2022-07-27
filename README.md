@@ -1,7 +1,12 @@
 # Analisadores léxico e sintático da linguagem LCC-2021-2
 Repositório para armazenamento do código relacionado ao trabalho 2 da disciplina INE5622-06238 - Introdução a Compiladores 
 
-Realizado por Andre, Arthur, José Ribamar, Matheus (18100867) e Pedro
+Realizado por:
+Arthur Machado Capaverde (17207215),
+José Ribamar Marçal Martins Junior (15101188),
+Luiz Andre Ventura Gosling (16203896),
+Matheus Miranda Torres Gomes (18100867)
+Pedro Henrique Azevedo (14201116)
 
 ## Estrutura do código
 
