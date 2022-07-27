@@ -1,4 +1,7 @@
+import os
+import sys
 from sly import Lexer
+from sly import lex
 
 class GCCLexer(Lexer):
     # Set of token names.   This is always required
@@ -96,10 +99,18 @@ if __name__ == '__main__':
     lexer = GCCLexer()
     while True:
         try:
-            text = input('basic > ')
+            if len(sys.argv[1]) < 1:
+                print("Por favor insira um arquivo a ser analisado.")
+                break
+            text = open(os.path.join(os.path.dirname(__file__), sys.argv[1]), 'r').read()
+            print(text)
         except EOFError:
             break
-        if text:
-            lex = lexer.tokenize(text)
-            for token in lex:
-                print(token)
+        try:
+            if text:
+                lexResult = lexer.tokenize(text)
+                for token in lexResult:
+                    print(token)
+        except lex.LexError as e:
+            print(e)
+
