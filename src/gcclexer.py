@@ -5,7 +5,7 @@ from sly import lex
 
 class GCCLexer(Lexer):
     # Set of token names.   This is always required
-    tokens = { DEF, IDENT, NUMBER, PLUS, MINUS, TIMES,
+    tokens = { DEF, IDENT, PLUS, MINUS, TIMES,
         DIVIDE, ASSIGN, LPAREN, RPAREN, LBRACE, 
         RBRACE, LBRACKET, RBRACKET, INT, FLOAT, STRING,
         SEMICOL, BREAK, COL, READ, PRINT, RETURN, IF, ELSE, FOR, NEW,

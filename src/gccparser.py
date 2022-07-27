@@ -9,7 +9,7 @@ class GCCParser(Parser):
         ('left', PLUS, MINUS),
         ('left', TIMES, DIVIDE),
         ('left', IDENT),
-        ('left', STRING_CONSTANT),
+        ('left', STRING_CONSTANT)
     )
 
     @_('')

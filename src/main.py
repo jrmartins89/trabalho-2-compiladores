@@ -1,34 +1,36 @@
+import sys
 from gcclexer import GCCLexer
+from sly import lex
 from gccparser import GCCParser
 
 if __name__ == '__main__':
-    data = 'def func1 (int A, int B){' \
-           'int SM [2];' \
-           'SM [0] = A + B;' \
-           'SM [1] = B * C;' \
-           'return ;' \
-           '}' \
-           'def principal ()' \
-           '{' \
-           'int C;' \
-           'int D;' \
-           'int R;' \
-           'C = 4;' \
-           'D = 5;' \
-           'R = func1 (C, D);' \
-           'return ;' \
-           '}'
     lexer = GCCLexer()
-    for tok in lexer.tokenize(data):
-        print('type=%r, value=%r' % (tok.type, tok.value))
-
-    parser = GCCParser()
-
     while True:
         try:
-            text = input('calc > ')
-            result = parser.parse(lexer.tokenize(text))
+            if len(sys.argv) <= 1:
+                print('################Analisador Lexico########################\n\n')
+                text = input('Insira o caminho do arquivo \n\n'
+                             'Ex: ../../trabalho-2-compiladores/codigosLCC/codigo1.lcc \n\n')
+            lexText = open(text, 'r').read()
+            print(lexText)
+        except EOFError:
+            break
+        try:
+            if lexText:
+                lexResult = lexer.tokenize(lexText)
+                for token in lexResult:
+                    print(token)
+                break
+        except lex.LexError as e:
+            print(e)
+
+    print('\n\n\n\n')
+
+    print('################Analisador Sintático########################\n\n')
+    parser = GCCParser()
+    while True:
+        try:
+            result = parser.parse(lexer.tokenize(lexText))
             print(result)
         except EOFError:
             break
-
