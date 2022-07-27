@@ -86,7 +86,7 @@ class GCCLexer(Lexer):
 
     @_(r'\n+')
     def newLine(self, t):
-        self.lineno = t.value.count('\n')
+        self.lineno += len(t.value)
     
 
     def remove_quotes(self, text: str):
