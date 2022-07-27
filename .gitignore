@@ -6,8 +6,6 @@ __pycache__/
 # makefile 
 makefile_venv/
 
-.idea/
-
 # C extensions
 *.so
 

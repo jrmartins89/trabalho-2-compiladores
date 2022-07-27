@@ -99,8 +99,8 @@ if __name__ == '__main__':
     lexer = GCCLexer()
     while True:
         try:
-            if len(sys.argv[1]) < 1:
-                print("Por favor insira um arquivo a ser analisado.")
+            if len(sys.argv) <= 1:
+                print("Por favor insira um arquivo a ser analisado. \nExemplo: python src/gcclexer.py caminho/relatico/para/seu/arquivo.lcc")
                 break
             text = open(os.path.join(os.path.dirname(__file__), sys.argv[1]), 'r').read()
             print(text)
@@ -111,5 +111,6 @@ if __name__ == '__main__':
                 lexResult = lexer.tokenize(text)
                 for token in lexResult:
                     print(token)
+                break
         except lex.LexError as e:
             print(e)
