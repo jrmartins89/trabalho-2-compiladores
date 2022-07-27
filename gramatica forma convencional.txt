@@ -1,0 +1,43 @@
+PROGRAM                  -> STATEMENT | FUNCLIST | ε
+FUNCLIST                 -> FUNCDEF FUNCLIST | FUNCDEF
+FUNCDEF                  -> def ident(PARAMLIST){STATELIST}
+PARAMLIST                -> int ident, PARAMLIST
+PARAMLIST                -> float ident, PARAMLIST
+PARAMLIST                -> string ident, PARAMLIST
+PARAMLIST                -> int ident
+PARAMLIST                -> float ident
+PARAMLIST                -> string ident
+PARAMLIST                -> ε
+STATELIST                ->  STATEMENT | STATEMENT STATELIST
+STATEMENT                -> VARDECL; |ATRIBSTAT; | PRINTSTAT; | READSTAT;| RETURNSTAT; | IFSTAT | FORSTAT | {STATELIST}| break ; | ; 
+VARDECL                  -> int ident Z
+VARDECL                  -> float ident Z
+VARDECL                  -> string ident Z
+Z                        -> [int_constant] Z | ε
+NUMEXPRESSION    		 ->  TERM    L
+EXPRESSION             	 ->  NUMEXPRESSION G
+ATRIBSTAT                -> LVALUE = EXPRESSION
+ATRIBSTAT                -> LVALUE = ALLOCEXPRESSION
+ATRIBSTAT                -> LVALUE = FUNCCALL
+FUNCCALL                 -> ident (PARAMLISTCALL)
+PARAMLISTCALL      		 -> ident , PARAMLISTCALL | ident | ε
+PRINTSTAT                -> print EXPRESSION
+READSTAT                 -> read LVALUE
+RETURNSTAT             	 -> return
+IFSTAT                   -> if (EXPRESSION) STATEMENT    S
+S                        -> else STATEMENT | ε
+FORSTAT   				 -> for(ATRIBSTAT; EXPRESSION; ATRIBSTAT)   STATEMENT
+ALLOCEXPRESSION 		 -> new T K  [NUMEXPRESSION]
+T              			 -> int | float | string
+K              			 -> [NUMEXPRESSION] K | ε
+G                        ->  P  NUMEXPRESSION   | ε
+P                        ->  < | > |  <=  |  >=  | ==  |  !=
+L                        ->   L   O  TERM   | ε
+O                        ->   + | -
+TERM                     ->  UNARYEXPR              M 
+M                        ->  N   UNARYEXPR      |   ε
+N                        ->   *  |  /  |  %
+UNARYEXPR           	 ->  R     FACTOR
+R                        ->   +  |  -  |  ε
+FACTOR                   -> int_constant | float_constant | string_constant | null | LVALUE | (NUMEXPRESSION)
+LVALUE                   ->   ident   K
