@@ -8,9 +8,12 @@ if __name__ == '__main__':
     while True:
         try:
             if len(sys.argv) <= 1:
-                print('################Analisador Lexico########################\n\n')
-                text = input('Insira o caminho do arquivo \n\n'
-                             'Ex: ../../trabalho-2-compiladores/codigosLCC/codigo1.lcc \n\n')
+                print('################Analisador Lexico########################\n')
+                text = input('Insira o caminho do arquivo: '
+                             ' ../../trabalho-2-compiladores/codigosLCC/codigo1.lcc \n'
+                             'Para acessar os outros arquivos basta trocar o nome do arquivo para os nomes '
+                             '"codigo2.lcc" ou "codigo3.lcc" no final do caminho do arquivo.\n\n'
+                             'caminho ->')
             lexText = open(text, 'r').read()
             print(lexText)
         except EOFError:
