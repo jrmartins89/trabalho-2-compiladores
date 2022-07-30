@@ -30,13 +30,11 @@ if __name__ == '__main__':
         except lex.LexError as e:
             print(e)
 
-    print('\n\n\n\n')
-
-    while text:
-        print('################Analisador Sintático########################\n\n')
-        parser = GCCParser()
+        print('\n\n################Analisador Sintático########################\n\n')
         try:
+            parser = GCCParser()
             result = parser.parse(lexer.tokenize(lexText))
             print(result)
         except EOFError:
             break
+    print('\n\n\n\n')

@@ -6,9 +6,10 @@ class GCCParser(Parser):
     tokens = GCCLexer.tokens
 
     precedence = (
+        ('right', DEF),
         ('left', IDENT),
         ('left', LT, LE, GT, GE),
-        ('left', DEF, PLUS, MINUS),
+        ('left', PLUS, MINUS),
         ('left', TIMES, DIVIDE),
         ('left', LPAREN, RPAREN)
     )
