@@ -37,13 +37,13 @@ Onde:
 
 ## Para compilar    
 
-1. Basta rodar `make setup` e serão executados os passos necessários para preparação do ambiente
+1. Basta rodar `sudo make setup` e serão executados os passos necessários para preparação do ambiente
 
-Existe o comando `make clean` para limpar a pasta target.
+Existe o comando `sudo make clean` para limpar a pasta target.
 
 ## Para rodar
  
-O próprio `make setup` diz o que fazer, mas segue: 
+O próprio `sudo make setup` diz o que fazer, mas segue: 
 
 Para Executar basta rodar: 
 
