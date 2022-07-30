@@ -11,7 +11,7 @@ lexer:
 	setup
 run:
 	python lexer.py
-setup: requirements.txt
+setup:
 	if ! dpkg -l | grep python3-venv -c >>/dev/null; then sudo apt-get update && sudo apt-get install python3-venv; fi
 	make virtual_env
 	python3 -m pip install --user --upgrade pip
@@ -19,7 +19,8 @@ setup: requirements.txt
 	@make env_activate
 clean :
 	rm -rf __pychache__
-
+	rm -rf makefile_venv
+	@echo ">>>>>>>>>>>>>>> Virtual environment deleted <<<<<<<<<<<<<<<"
 
 env_activate:
 	@echo ">>>>>>>>>>>>>>> Make sure to activate virtual environment again <<<<<<<<<<<<<<<"
