@@ -1,0 +1,108 @@
+def printPath(int[][] path, int v, int u, int[] route, int i)
+{
+        if (path[v][u] == v) {
+            return;
+        }
+        printPath(path, v, path[v][u], route, i + 1);
+        route[i] = path[v][u];
+}
+
+printSolution(int[][] path, int n)
+    {
+        for (int v = 0; v < n; v++)
+        {
+            for (int u = 0; u < n; u++)
+            {
+                if (u != v )
+                {
+                    if (path[v][u] != -1)
+                    {
+                        int[] route = new int[];
+                        route[i] = v;
+                        printPath(path, v, u, route);
+                        i = i + 1;
+                        route[1] = u;
+                    }
+                }
+            }
+        }
+    }
+
+def floydWarshall(int[][] adjMatrix, int adjMatrixLength)
+{
+    if (adjMatrix ==null  adjMatrixLength == 0) {
+        return;
+    }
+    if (adjMatrixLength == 0) {
+        return;
+    }
+
+    int n = adjMatrixLength;
+
+    int[][] cost = new int[n][n];
+    int[][] path = new int[n][n];
+
+    for (int v = 0; v < n; v++)
+    {
+        for (int u = 0; u < n; u++)
+        {
+            cost[v][u] = adjMatrix[v][u];
+
+            if (v == u) {
+                path[v][u] = 0;
+            }
+            else if (cost[v][u] != MAXVALUE) {
+                path[v][u] = v;
+            }
+            else {
+                path[v][u] = -1;
+            }
+        }
+    }
+
+    for (int k = 0; k < n; k++)
+    {
+        for (int v = 0; v < n; v++)
+        {
+            for (int u = 0; u < n; u++)
+            {
+
+                if (cost[v][k] != MAXVALUE){
+                   if(cost[k][u] != MAXVALUE){
+                       if(cost[v][k] + cost[k][u] < cost[v][u]))
+                        {
+                            cost[v][u] = cost[v][k] + cost[k][u];
+                            path[v][u] = path[k][u];
+                        }
+                   }
+                }
+            }
+
+            if (cost[v][v] < 0)
+            {
+                print "Negative-weight cycle found!!";
+                return;
+            }
+        }
+    }
+
+    printSolution(path, n);
+}
+
+def main(String[] args)
+{
+    int I = MAXVALUE;
+
+    int[][] adjMatrix = new int[][]
+    {
+        { 0, I, -2, I },
+        { 4, 0, 3, I },
+        { I, I, 0, 2 },
+        { I, -1, I, 0 }
+    };
+
+    int adjMatrixLength = 4;
+
+    floydWarshall(adjMatrix, adjMatrixLength);
+}
+}

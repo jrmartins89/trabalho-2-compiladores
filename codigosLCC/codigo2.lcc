@@ -1,0 +1,123 @@
+def LEFT(int i)
+{
+    return (2*i + 1);
+}
+
+def RIGHT(int i){
+    return (2*i + 2);
+}
+
+def swap(int[] A, int i, int j)
+{
+    int temp = A[i];
+    A[i] = A[j];
+    A[j] = temp;
+}
+
+def heapify(int[] A, int i, int size)
+{
+    int left = LEFT(i);
+    int right = RIGHT(i);
+
+    int largest = i;
+
+    if (left < size)
+    {
+        if( A[left] > A[i])
+        {
+            largest = left;
+        }
+    }
+
+    if (right < size )
+    {
+        if( A[right] > A[largest])
+        {
+            largest = right;
+    }
+
+    if (largest != i)
+        {
+        swap(A, i, largest);
+        heapify(A, largest, size);
+    }
+}
+
+def pop(int[] A, int size)
+{
+    if (size <= 0)
+    {
+        return -1;
+    }
+
+    int top = A[0];
+
+    A[0] = A[size-1];
+
+    heapify(A, 0, size - 1);
+
+    return top;
+}
+
+def heapsort(int[] A, int arrLength)
+{
+    int i = (arrLength - 2) / 2;
+    while (i >= 0)
+    {
+        heapify(A, i--, n);
+    }
+
+    while (n > 0)
+    {
+        A[n - 1] = pop(A, n);
+        n--;
+    }
+}
+
+def main(String[] args)
+{
+    int[] A = { 6, 4, 7, 1, 9, -2 };
+
+    int arrLength = 6;
+
+    heapsort(A, arrLength);
+
+    print A;
+}
+
+def countsort(int[] arr, int arrLength, int k)
+{
+    int[] output = new int[arrLength];
+
+    int[] freq = new int[k + 1];
+
+    for (int i; i < arrsize(arr); i ++) {
+        freq[i]++;
+    }
+
+    int total = 0;
+    for (int i = 0; i < k + 1; i++)
+    {
+        int oldCount = freq[i];
+        freq[i] = total;
+        total += oldCount;
+    }
+
+    for (int i; i < arrsize(arr); i ++)
+    {
+        output[freq[i]] = i;
+        freq[i]++;
+    }
+
+}
+
+def main1(String[] args)
+{
+    int[] arr = { 4, 2, 10, 10, 1, 4, 2, 1, 10 };
+    int arrLength = 9;
+
+    int k = 10;
+
+    countsort(arr, arrLength, k);
+    print arr;
+}
